@@ -1,1 +1,114 @@
-123
+
+---
+title: "Sesión 5: Layouts en shiny y shiny dashboard"
+author: "Prof. Kimberley Isabel Orozco Cornejo"
+date: "2023-10-10"
+editor_options: 
+  markdown: 
+    wrap: 72
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(shinydashboard)
+library(dplyr)
+library(readxl)
+library(ggplot2)
+```
+
+
+```{r}
+# Definir la UI
+ui <- dashboardPage(
+  dashboardHeader(title = "Visualizador de datos de des(empleo) & género",
+                  titleWidth = 1000),
+  dashboardSidebar(disable = FALSE,
+                   width = 300,
+                   
+                   sidebarMenu(
+                     menuItem("Gráfico de dispersión", 
+                              tabName = "bars", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Histograma", 
+                              tabName = "histogram", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Tabla", 
+                              tabName = "table", 
+                              icon = icon("th"))
+                   )
+  ),
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = "bars",
+              h2("Gráfico de dispersión"),
+                selectInput("variable_seleccionada", 
+                          label = "Selecciona las variable que deseas visualizar en el gráfico:", 
+                          choices = colnames(datos_empleo_genero),
+                          multiple = FALSE),
+              plotOutput("bars1")
+      ),
+      
+      tabItem(tabName = "histogram",
+              h2("Histograma"),
+              selectInput("variable_seleccionada", 
+                          label = "Selecciona una variable continua:", 
+                          choices = c(colnames(datos_empleo_genero)),
+                          selected = "Pais"
+              ),
+              plotOutput("histogram1")
+      ),
+      
+      tabItem(tabName = "table",
+              h2("Tabla"),
+            
+              selectInput("columna_seleccionada", 
+                          label = "Selecciona las columnas que deseas visualizar en la tabla:", 
+                          choices = colnames(datos_empleo_genero),
+                          multiple = TRUE),
+              dataTableOutput("tabla_seleccionada"),
+              dataTableOutput("table1")
+      )
+    )
+  )
+)
+
+# Definir el servidor
+server <- function(input, output, session) {
+  
+  # Gráfico de dispersion
+  
+output$bars1 <- renderPlot({
+  ggplot(datos_empleo_genero, aes_string(x = input$variable_seleccionada, y = "pais_region", color = "factor(anyo)")) +
+    geom_point() +
+    labs(title = paste("Comparación de", input$variable_seleccionada, "y País/Región"),
+         x = input$variable_seleccionada,
+         y = "País/Región",
+         color = "Año") +
+    theme_minimal()
+})
+
+  
+  # Gráfico de Histograma
+  output$histogram1 <- renderPlot({
+    ggplot(datos_empleo_genero, aes_string(x = input$variable_seleccionada)) + 
+      geom_histogram(binwidth = 0.5, fill = "lightblue", color = "white", alpha = 0.7) +
+      labs(title = paste("Histograma de", input$variable_seleccionada), 
+           x = input$variable_seleccionada) +
+      theme_minimal()
+  })
+  
+  # Tabla de datos
+  output$tabla_seleccionada <- renderDataTable({
+    datos_empleo_genero[, input$columna_seleccionada, drop = FALSE]
+  })
+  
+}
+
+# Crear la aplicación Shiny
+shinyApp(ui, server)
+```
+
