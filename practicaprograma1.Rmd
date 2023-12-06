@@ -1,0 +1,54 @@
+---
+title: "Practica Programada 1"
+author: "Juliana Cruz Gonzales"
+date: "2023-12-06"
+editor_options: 
+  markdown: 
+    wrap: 72
+  chunk_output_type: console
+---
+
+
+```{r}
+library(shiny)
+library(shinydashboard)
+
+# Crear la interfaz de usuario (UI)
+ui <- dashboardPage(
+  dashboardHeader(
+    title = "Visualizador de datos de des(empleo) & género",
+    titleWidth = 1000
+  ),
+  dashboardSidebar(disable = FALSE,
+                   width = 300,
+                   
+                   sidebarMenu(
+                     menuItem("Gráfico de barras", 
+                              tabName = "bars", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Histograma", 
+                              tabName = "histogram", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Tabla", 
+                              tabName = "table", 
+                              icon = icon("th"))
+                   )
+  ),
+  dashboardBody(
+    # Agrega aquí los elementos del cuerpo del dashboard
+    # Por ejemplo: tabItems(), plotOutput(), etc.
+  )
+)
+
+server <- function(input, output) { }
+
+shinyApp(ui, server)
+
+```
+
+
+
+
+
