@@ -126,3 +126,9 @@ server <- function(input, output, session) {
 
 
 ```
+
+T3 
+Al menos 3 outputs que muestren gráficos, y 1 output que muestre una tabla. Los gráficos de ggplot2
+deben estar correctamente titulados, y mostrar la información de una manera que sea interpretable y
+clara para la persona que ingresa al dashboard.
+
