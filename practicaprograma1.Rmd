@@ -7,7 +7,9 @@ editor_options:
     wrap: 72
   chunk_output_type: console
 ---
+
 T1 Agregar Inputs
+
 
 ```{r}
 library(shiny)
@@ -47,6 +49,7 @@ server <- function(input, output) { }
 shinyApp(ui, server)
 
 ```
+
 T2 Agregar boton 
 
 ```{r}
@@ -123,10 +126,3 @@ server <- function(input, output, session) {
 
 
 ```
-
-
-
-
-
-
-
