@@ -8,6 +8,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+T1 Agregar Inputs
+
 
 ```{r}
 library(shiny)
@@ -48,12 +50,79 @@ shinyApp(ui, server)
 
 ```
 
+T2 Agregar boton 
+
 ```{r}
 
+ui <- dashboardPage(
+  dashboardHeader(title = "Visualizador de datos de des(empleo) & género",
+                  titleWidth = 1000),
+  dashboardSidebar(disable = FALSE,
+                   width = 300,
+                   
+                   sidebarMenu(
+                     menuItem("Gráfico de dispersión", 
+                              tabName = "bars", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Histograma", 
+                              tabName = "histogram", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Tabla", 
+                              tabName = "table", 
+                              icon = icon("th"))
+                   ),
+                   # Agregar un botón
+                   actionButton("mi_boton", "Dale click")
+  ),
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = "bars",
+              h2("Gráfico de dispersión123"),
+                selectInput("variable_seleccionada", 
+                          label = "Selecciona las variable que deseas visualizar en el gráfico de barras:", 
+                          choices = colnames(datos_empleo_genero),
+                          multiple = FALSE),
+              plotOutput("bars1"),
+              # Agregar un espacio para mostrar el mensaje del botón
+              textOutput("mensaje_boton")
+      ),
+      
+      tabItem(tabName = "histogram",
+              h2("Histograma"),
+              selectInput("variable_seleccionada", 
+                          label = "Selecciona una variable continua:", 
+                          choices = c(colnames(datos_empleo_genero)),
+                          selected = "Pais"
+              ),
+              plotOutput("histogram1"),
+              # Agregar un espacio para mostrar el mensaje del botón
+              textOutput("mensaje_boton")
+      ),
+      
+      tabItem(tabName = "table",
+              h2("Tabla"),
+            
+              selectInput("columna_seleccionada", 
+                          label = "Selecciona las columnas que deseas visualizar en la tabla:", 
+                          choices = colnames(datos_empleo_genero),
+                          multiple = TRUE),
+              dataTableOutput("tabla_seleccionada"),
+              dataTableOutput("table1")
+      )
+    )
+  )
+)
+
+# Definir el servidor
+server <- function(input, output, session) {
+  
+  observeEvent(input$mi_boton, {
+    print("¡Hiciste clic en el botón!")
+  })
+  
+}
+
+
 ```
-
-
-
-
-
-
