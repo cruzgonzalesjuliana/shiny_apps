@@ -1,0 +1,239 @@
+---
+title: "Practica Programada 1"
+author: "Juliana Cruz Gonzales"
+date: "2023-12-06"
+editor_options: 
+  markdown: 
+    wrap: 72
+  chunk_output_type: console
+---
+
+T1 Agregar Inputs
+
+
+```{r}
+library(shiny)
+library(shinydashboard)
+
+# Crear la interfaz de usuario (UI)
+ui <- dashboardPage(
+  dashboardHeader(
+    title = "Visualizador de datos de des(empleo) & género",
+    titleWidth = 1000
+  ),
+  dashboardSidebar(disable = FALSE,
+                   width = 300,
+                   
+                   sidebarMenu(
+                     menuItem("Gráfico de barras", 
+                              tabName = "bars", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Histograma", 
+                              tabName = "histogram", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Tabla", 
+                              tabName = "table", 
+                              icon = icon("th"))
+                   )
+  ),
+  dashboardBody(
+    # Agrega aquí los elementos del cuerpo del dashboard
+    # Por ejemplo: tabItems(), plotOutput(), etc.
+  )
+)
+
+server <- function(input, output) { }
+
+shinyApp(ui, server)
+
+```
+
+T2 Agregar boton 
+
+```{r}
+
+ui <- dashboardPage(
+  dashboardHeader(title = "Visualizador de datos de des(empleo) & género",
+                  titleWidth = 1000),
+  dashboardSidebar(disable = FALSE,
+                   width = 300,
+                   
+                   sidebarMenu(
+                     menuItem("Gráfico de dispersión", 
+                              tabName = "bars", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Histograma", 
+                              tabName = "histogram", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Tabla", 
+                              tabName = "table", 
+                              icon = icon("th"))
+                   ),
+                   # Agregar un botón
+                   actionButton("mi_boton", "Dale click")
+  ),
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = "bars",
+              h2("Gráfico de dispersión123"),
+                selectInput("variable_seleccionada", 
+                          label = "Selecciona las variable que deseas visualizar en el gráfico de barras:", 
+                          choices = colnames(datos_empleo_genero),
+                          multiple = FALSE),
+              plotOutput("bars1"),
+              # Agregar un espacio para mostrar el mensaje del botón
+              textOutput("mensaje_boton")
+      ),
+      
+      tabItem(tabName = "histogram",
+              h2("Histograma"),
+              selectInput("variable_seleccionada", 
+                          label = "Selecciona una variable continua:", 
+                          choices = c(colnames(datos_empleo_genero)),
+                          selected = "Pais"
+              ),
+              plotOutput("histogram1"),
+              # Agregar un espacio para mostrar el mensaje del botón
+              textOutput("mensaje_boton")
+      ),
+      
+      tabItem(tabName = "table",
+              h2("Tabla"),
+            
+              selectInput("columna_seleccionada", 
+                          label = "Selecciona las columnas que deseas visualizar en la tabla:", 
+                          choices = colnames(datos_empleo_genero),
+                          multiple = TRUE),
+              dataTableOutput("tabla_seleccionada"),
+              dataTableOutput("table1")
+      )
+    )
+  )
+)
+
+# Definir el servidor
+server <- function(input, output, session) {
+  
+  observeEvent(input$mi_boton, {
+    print("¡Hiciste clic en el botón!")
+  })
+  
+}
+
+
+```
+
+T3 
+Al menos 3 outputs que muestren gráficos, y 1 output que muestre una tabla. Los gráficos de ggplot2
+deben estar correctamente titulados, y mostrar la información de una manera que sea interpretable y
+clara para la persona que ingresa al dashboard.
+
+
+```{r}
+library(shiny)
+library(shinydashboard)
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(readr)
+
+# Definir la UI
+ui <- dashboardPage(
+  dashboardHeader(title = "Visualizador de datos de des(empleo) & género",
+                  titleWidth = 1000),
+  dashboardSidebar(disable = FALSE,
+                   width = 300,
+                   
+                   sidebarMenu(
+                     menuItem("Gráfico de barras", 
+                              tabName = "bars", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Histograma", 
+                              tabName = "histogram", 
+                              icon = icon("chart-bar")),
+                     
+                     menuItem("Tabla", 
+                              tabName = "table", 
+                              icon = icon("th"))
+                   )
+  ),
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = "bars",
+              h2("Gráfico de barras"),
+              p("En esta visualización podemos apreciar el comportamiento de la variable que desees seleccionar..."),
+              selectInput("variable_seleccionada_bars", 
+                          label = "Selecciona una variable continua:", 
+                          choices = colnames(datos_empleo_genero)
+              ),
+              plotOutput("bars1")
+      ),
+      
+      tabItem(tabName = "histogram",
+              h2("Histograma"),
+              p("En esta visualización podemos apreciar ..."),
+              selectInput("variable_seleccionada", 
+                          label = "Selecciona una variable continua:", 
+                          choices = colnames(datos_empleo_genero),
+                          selected = "Pais"
+              ),
+              plotOutput("histogram1")
+      ),
+      
+      tabItem(tabName = "table",
+              selectInput("columna_seleccionada", 
+                          label = "Selecciona las columnas:", 
+                          choices = colnames(datos_empleo_genero),
+                          multiple = TRUE),
+              dataTableOutput("tabla_seleccionada"),
+              h2("Tabla "),
+              p("En esta tabla podemos apreciar ..."),
+              dataTableOutput("table1")
+      )
+    )
+  )
+)
+
+# Definir el servidor
+server <- function(input, output, session) {
+  
+   # Carga de data
+  datos_empleo_genero <-   read.csv("/Users/julianacruz/Desktop/shiny_apps/datos/datos_empleo_genero.csv", skip = 1)
+  
+  # Gráfico de barras
+  output$bars1 <- renderPlot({
+    ggplot(datos_empleo_genero, aes(x = Pais, y = "variable_seleccionada_bars", fill = Pais)) +
+      geom_bar(stat = "identity") +
+      labs(title = "Gráfico de Barras",
+           x = "País",
+           y = "Valor1") +
+      theme_minimal()
+  })
+  
+  # Gráfico de Histograma
+  output$histogram1 <- renderPlot({
+    ggplot(datos_empleo_genero, aes_string(x = input$variable_seleccionada)) + 
+      geom_histogram(binwidth = 5, fill = "blue", color = "white", alpha = 0.7) +
+      labs(title = paste("Histograma de", input$variable_seleccionada), 
+           x = input$variable_seleccionada) +
+      theme_minimal()
+  })
+  
+  # Tabla de datos
+  output$tabla_seleccionada <- renderDataTable({
+    datos_empleo_genero[, input$columna_seleccionada, drop = FALSE]
+  })
+  
+}
+
+# Crear la aplicación Shiny
+shinyApp(ui, server)
+
+```
+
+
